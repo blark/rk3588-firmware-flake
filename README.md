@@ -6,6 +6,8 @@ Minimal, reproducible builds for Rock 5B firmware components:
 * **rkbin** — Rockchip DDR/TPL blobs & tools
 * **uboot** — U-Boot for Rock 5B integrated with TF-A + rkbin
 
+> **Why this exists**: Stock U-Boot couldn't WGET FIT images or auto-detect my NIC on boot. So naturally, I built this Nix flake. 🚀 (Also, figuring out the build process was hella irritating, so now you don't have to.)
+
 Builds for Linux/ARM64 (tf-a, uboot) and Linux/x86_64 (rkbin); macOS aliases to Linux outputs and offloads to remote builders.
 
 ![Rock 5B U-Boot](rock5b-uboot.png)
