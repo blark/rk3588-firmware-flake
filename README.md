@@ -21,6 +21,8 @@ Builds for Linux/ARM64 (tf-a, uboot) and Linux/x86_64 (rkbin); macOS aliases to 
 
 > Configuring Nix remote builders is beyond the scope of this document. See the [Nix manual](https://nixos.org/manual/nix/stable/advanced-topics/distributed-builds.html) for details.
 
+**Note**: This repo includes the latest pre-built binaries, so you can skip building entirely if you just want to flash the firmware.
+
 ---
 
 ## Quick start
