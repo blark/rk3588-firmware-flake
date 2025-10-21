@@ -21,7 +21,7 @@ Builds for Linux/ARM64 (tf-a, uboot) and Linux/x86_64 (rkbin); macOS aliases to 
 
 > Configuring Nix remote builders is beyond the scope of this document. See the [Nix manual](https://nixos.org/manual/nix/stable/advanced-topics/distributed-builds.html) for details.
 
-**Note**: This repo includes the latest pre-built binaries, so you can skip building entirely if you just want to flash the firmware.
+**Note**: This repo includes the latest pre-built binaries in `firmware/`, so you can skip building entirely if you just want to flash the firmware. The included binaries have the critical GCC 11 fix for proper multi-CPU initialization.
 
 ---
 
@@ -69,10 +69,12 @@ sudo ./rkdeveloptool ld
 # Clear SPI (only needed after failed flash)
 sudo ./rkdeveloptool ef
 
-# Download bootloader to Rock 5B
-sudo ./rkdeveloptool db result-1/rk3588_spl_loader_v1.19.113.bin
+# Option 1: Using pre-built binaries (no Nix required)
+sudo ./rkdeveloptool db firmware/rk3588_spl_loader_v1.19.113.bin
+sudo ./rkdeveloptool wl 0 firmware/u-boot-rockchip-spi.bin
 
-# Write U-Boot image to SPI
+# Option 2: Using Nix build outputs
+sudo ./rkdeveloptool db result-1/rk3588_spl_loader_v1.19.113.bin
 sudo ./rkdeveloptool wl 0 result-2/u-boot-rockchip-spi.bin
 
 # Reset device (reboot to normal mode)
