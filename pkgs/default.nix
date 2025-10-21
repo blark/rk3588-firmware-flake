@@ -1,10 +1,12 @@
 # pkgs/default.nix — Central wiring. Keeps imports small and dependencies explicit.
 # Each sub-file is a minimal, focused derivation.
-{ pkgsA64, pkgsX86 }:
+{ pkgsA64, pkgsX86, pkgsGcc11 }:
 
 let
-  # TF-A is pure aarch64 build.
-  tf-a  = pkgsA64.callPackage ./tf-a.nix { };
+  # TF-A is pure aarch64 build, using GCC 11 from old nixpkgs
+  tf-a  = pkgsA64.callPackage ./tf-a.nix {
+    gcc = pkgsGcc11.gcc11;
+  };
 
   # rkbin provides Rockchip blobs/tools; tool is x86-only, so we build it on x86_64-linux.
   rkbin = pkgsX86.callPackage ./rkbin.nix { };

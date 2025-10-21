@@ -4,16 +4,20 @@
   description = "RK3588 firmware toolchain (TF-A, rkbin, U-Boot)";
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+  # Old nixpkgs for GCC 11 (needed for TF-A - newer GCC breaks CPU init)
+  inputs.nixpkgs-gcc11.url = "github:NixOS/nixpkgs/nixos-24.05";
 
-  outputs = { self, nixpkgs }:
+  outputs = { self, nixpkgs, nixpkgs-gcc11 }:
   let
     # We intentionally build everything with Linux toolchains:
     pkgsA64 = nixpkgs.legacyPackages."aarch64-linux";
     pkgsX86 = nixpkgs.legacyPackages."x86_64-linux";
+    # Old nixpkgs for GCC 11 (TF-A needs it)
+    pkgsGcc11 = nixpkgs-gcc11.legacyPackages."aarch64-linux";
 
     # Derivations are defined in pkgs/*.nix; we pass in the toolchains they must use.
     linuxPkgs = import ./pkgs {
-      inherit pkgsA64 pkgsX86;
+      inherit pkgsA64 pkgsX86 pkgsGcc11;
     };
   in
   {
