@@ -59,10 +59,44 @@ stdenv.mkDerivation {
   # Base defconfig + minimal tweaks; use Kconfig to resolve deps
   configurePhase = ''
     make rock5b-rk3588_defconfig
-    cat >> .config <<EOF
-    CONFIG_CMD_WGET=y
-    CONFIG_PCI_INIT_R=y
-    EOF
+
+    # Disable default environment storage and enable SPI flash
+    sed -i '/CONFIG_ENV_IS_NOWHERE/d' .config
+    sed -i '/CONFIG_ENV_IS_IN_MMC/d' .config
+    sed -i '/CONFIG_ENV_IS_IN_FAT/d' .config
+    sed -i '/CONFIG_ENV_IS_IN_EXT4/d' .config
+
+    cat >> .config <<'EOF'
+CONFIG_CMD_WGET=y
+CONFIG_PCI_INIT_R=y
+CONFIG_PROT_TCP_SACK=y
+# Network console for remote access
+CONFIG_NETCONSOLE=y
+CONFIG_NETCONSOLE_BUFFER_SIZE=512
+# Console multiplexing for multiple devices (serial,nc)
+CONFIG_CONSOLE_MUX=y
+CONFIG_SYS_CONSOLE_IS_IN_ENV=y
+# Allow overwriting protected environment variables
+CONFIG_ENV_OVERWRITE=y
+# Longer boot delay for netconsole setup
+CONFIG_BOOTDELAY=10
+# Environment storage in SPI flash
+# CONFIG_ENV_IS_NOWHERE is not set
+# CONFIG_ENV_IS_IN_MMC is not set
+# CONFIG_ENV_IS_IN_FAT is not set
+# CONFIG_ENV_IS_IN_EXT4 is not set
+CONFIG_ENV_IS_IN_SPI_FLASH=y
+CONFIG_SYS_REDUNDAND_ENVIRONMENT=y
+CONFIG_ENV_OFFSET=0x3f0000
+CONFIG_ENV_OFFSET_REDUND=0x3f8000
+CONFIG_ENV_SIZE=0x8000
+CONFIG_ENV_SECT_SIZE=0x1000
+# Boot configuration
+CONFIG_USE_BOOTCOMMAND=y
+CONFIG_BOOTCOMMAND="dhcp; wget 0x60000000 ''${fit}; bootm"
+CONFIG_USE_PREBOOT=y
+CONFIG_PREBOOT="setenv autoload no; setenv serverip 192.168.1.83; setenv httpdstp 8080; setenv fit /rock5b.fit"
+EOF
     make olddefconfig
   '';
 

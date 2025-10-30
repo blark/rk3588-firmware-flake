@@ -6,6 +6,10 @@
 # - Install only BL31 to keep the store small.
 { lib, stdenv, fetchgit, dtc, gcc }:
 
+let
+  gitRev = "049971ce2782633725c0350f0c607b923077c955";
+  shortRev = lib.substring 0 8 gitRev;
+in
 stdenv.mkDerivation {
   pname = "tf-a-rk3588";
   version = "unstable";
@@ -19,7 +23,7 @@ stdenv.mkDerivation {
 
   src = fetchgit {
     url = "https://gitlab.collabora.com/hardware-enablement/rockchip-3588/trusted-firmware-a.git";
-    rev = "049971ce2782633725c0350f0c607b923077c955";     # pin exact commit
+    rev = gitRev;
     sha256 = "sha256-vgisUSH/SEzxGQaPdWZczx8M7cgIaMmmM0BvhyzV33M="; # replace with real SRI hash
     fetchSubmodules = true;                                 # TF-A occasionally uses submodules
   };
@@ -33,6 +37,9 @@ stdenv.mkDerivation {
   preBuild = ''
     unset CFLAGS CXXFLAGS LDFLAGS NIX_CFLAGS_COMPILE NIX_LDFLAGS
     unset CPP AS AR LD OC OD
+
+    # Set build identifier (shows in BL31 boot banner)
+    export BUILD_STRING="${shortRev}-nix-$(date +%Y%m%d)"
   '';
 
   # PLAT selects RK3588; only build BL31.
